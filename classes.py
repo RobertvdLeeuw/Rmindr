@@ -1,29 +1,46 @@
-from enum import Enum
+__author__ = "Robert van der Leeuw"
+__date__ = "11/9/2021"
+
+from datetime import datetime, timedelta
+import ctypes
+
 
 class Reminder:
-    def __init__(self, time, description):
+    done = False
+
+    def __init__(self, time: datetime, description: str):
         self.time = time
         self.description = description
 
-    @property
-    def time(self):
-        return self.time
+    def PopUp(self):
+        if self.done:
+            return
 
-    @time.setter
-    def time(self, newtime):
-        self.time = newtime
+        mbox = ctypes.windll.user32.MessageBoxW(0, self.description, "Rmindr", 1)
 
-    @property
-    def description(self):
-        return self.description
+        match mbox:
+            case 1:  # IDYES
+                self.done = True
 
-    @description.setter
-    def description(self, newdescription):
-        self.description = newdescription
+            case 2:  # IDCANCEL
+                self.time += timedelta(minutes=10)  # Snoozing.
+
+            case _:
+                self.time += timedelta(seconds=5)
+
+    def __str__(self):
+        return f"{self.time}: {self.description}"
 
 
 class ReminderSystem:
     reminderList = list()
 
-    def __init__(self, path):
+    def __init__(self, path: str):
         self.path = path
+
+    def Check(self):
+        for reminder in [rmd for rmd in self.reminderList if not rmd.done]:
+            if (reminder.time - datetime.now()).seconds > 0:
+                continue
+
+            reminder.PopUp()
