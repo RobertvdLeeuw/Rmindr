@@ -1,5 +1,5 @@
   a: add reminder, e.g. Time: 2 March 2021 18:30 Description: Go for a walk.
-  r: remove reminder
+  r: remove reminder, e.g. r 313431
   c: change reminder
   l: list reminders
   q: quit

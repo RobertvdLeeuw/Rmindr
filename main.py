@@ -16,24 +16,50 @@ def InputLoop(remindersystem):
         if not command:
             continue
 
-        match command.lower():
+        command = command.split()
+
+        match command[0].lower():
             case 'a':
-                rtime, rdescription = input("Time: "), input("Description: ")
+                rmdtime, rmddescription = input("Time: "), input("Description: ")
 
-                if not (rtime := CheckTime(rtime)):
-                    continue
-
-                reminder = Reminder(rtime, rdescription)
-                remindersystem.reminderList.append(reminder)
+                if rmdtime := CheckTime(rmdtime):
+                    print(type(rmdtime))
+                    reminder = Reminder(rmdtime, rmddescription)
+                    remindersystem.reminders.append(reminder)
+                else:
+                    print("Invalid timestamp format.")
 
             case 'r':
-                pass
+                if len(command) != 2:
+                    print('Need 2 arguments (r <id>).')
+                    continue
+
+                if remindersystem.Delete(int(command[1])):
+                    print(f'Removed reminder with id {command[1]}.')
 
             case 'c':
-                pass
+                if len(command) != 2:
+                    print('Need 2 arguments (c <id>).')
+                    continue
+
+                if reminder := remindersystem.Get(int(command[1])):
+                    rmdtime, rmddescription = input("Change time? (Y/N)"), input("Change description? (Y/N)")
+
+                    if rmdtime == "Y":
+                        if checkedtime := CheckTime(input("Time: ")):
+                            print(type(checkedtime))
+                            reminder.time = checkedtime
+                        else:
+                            print("Invalid timestamp format.")
+                    if rmddescription == "Y":
+                        reminder.description = input("Description: ")
 
             case 'l':
-                for reminder in remindersystem:
+                if not len(remindersystem.reminders):
+                    print('No reminders left.')
+                    continue
+
+                for reminder in remindersystem.reminders:
                     print(reminder)
 
             # Add network stuff. (add/remove connection, invite.)

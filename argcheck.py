@@ -9,9 +9,9 @@ def CheckTime(strtime: str):
 		dtime = datetime.strptime(strtime, '%d %B %Y %H:%M')
 		if (dtime - datetime.now()).seconds < 0:
 			print('That time already passed.')
-			return None
+			return
 
 		return dtime
 	except ValueError:
 		print('Invalid time argument')
-		return None
+		return
